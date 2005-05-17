@@ -1,0 +1,25 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=1284
+
+TortoiseSVN.vim will commit the current buffer to your subversion 
+repository everytime you update the file or once per session (see 
+|tortoiseSvnCommitOnce|). The advantage over using command line svn 
+commands is that you get the TortoiseSVN GUI for committing files, 
+browsing the repository etc.
+
+Some aspects of this plugin can be configured by setting the following 
+variables in your |vimrc| file.
+
+    g:tortoiseSvnCmd :: The path to "TortoiseProc.exe".
+
+    g:tortoiseSvnCommitOnce, b:tortoiseSvnCommitOnce :: If true, the 
+    buffer will be committed to the subversion repository only once 
+    (i.e., when saving the file for the first time).
+
+    g:tortoiseSvnMenuPrefix :: If empty (''), no menu will be installed.
+
+    g:tortoiseSvnStartCmd :: A command for detaching TortoiseProc.exe 
+    from the shell (e.g., start).
+
+    g:tortoiseSvnInstallAutoCmd :: If false, no autocmd will be 
+    installed.
+
