@@ -2,8 +2,8 @@
 " @Author:      Thomas Link (mailto:samul@web.de?subject=vim-TortoiseSVN)
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     13-Mai-2005.
-" @Last Change: 16-Mai-2005.
-" @Revision:    0.1.56
+" @Last Change: 19-Mai-2005.
+" @Revision:    0.2.89
 
 if &cp || exists("loaded_tortoisesvn")
     finish
@@ -37,19 +37,23 @@ if !exists('g:tortoiseSvnMenuPrefix')
 endif
 
 if !exists('g:tortoiseSvnStartCmd')
-    if &shell =~ 'sh'
-        let g:tortoiseSvnStartCmd = 'cygstart'
-    " elseif &shell =~ '\(cmd\|command|)'
-    else
-        let g:tortoiseSvnStartCmd = 'start'
-    endif
+    let g:tortoiseSvnStartCmd = &shell =~ 'sh' ? 'cygstart' : 'start'
+endif
+
+if &shell =~ 'sh'
+    fun! <SID>CanonicFileName(fname)
+        return "'". substitute(a:fname, '[/\\]', '\\\\', 'g') ."'"
+    endf
+else
+    fun! <SID>CanonicFileName(fname)
+        return substitute(a:fname, '[/\\]', '\\', 'g')
+    endf
 endif
 
 fun! <SID>GetCmdLine(command)
     if isdirectory('.svn') && bufname('%') != ''
-        let fn  = substitute(expand('%:p'), '[/\\]', '\\\\', 'g')
-        " let fn  = expand('%')
-        let cmd = g:tortoiseSvnCmd ." /command:". a:command ." /path:'". fn ."' /notempfile /closeonend"
+        let fn  = <SID>CanonicFileName(expand('%:p'))
+        let cmd = g:tortoiseSvnCmd ." /command:". a:command ." /path:". fn ." /notempfile /closeonend"
         return cmd
     else
         return ''
@@ -78,7 +82,7 @@ endf
 
 fun! TortoiseSvnMaybeCommitCurrentBuffer()
     if !exists('b:tortoiseSvnCommittedOnce')
-        " " Adding a log message make TortoiseSVN crash here on my computer
+        " " Adding a log message makes TortoiseSVN crash here on my computer
         " if exists('*TortoiseSvnLogMsg')
         "     let msg = substitute(TortoiseSvnLogMsg(), '[@"\\]', '_', 'g')
         "     let cmd = cmd ." /logmsg:'". msg. "'"
@@ -101,7 +105,7 @@ command! TortoiseSvnCommit        :call TortoiseSvnMaybeCommitCurrentBuffer()
 if g:tortoiseSvnMenuPrefix != ''
     exec 'amenu '. g:tortoiseSvnMenuPrefix .'&Browser         :TortoiseSvnBrowser<cr>'
     exec 'amenu '. g:tortoiseSvnMenuPrefix .'Check&out        :TortoiseSvnCheckout<cr>'
-    exec 'amenu '. g:tortoiseSvnMenuPrefix .'&Commit          :TortoiseSvnUpdate<cr>'
+    exec 'amenu '. g:tortoiseSvnMenuPrefix .'&Commit          :call TortoiseExec("commit")<cr>'
     exec 'amenu '. g:tortoiseSvnMenuPrefix .'&Log             :TortoiseSvnLog<cr>'
     exec 'amenu '. g:tortoiseSvnMenuPrefix .'Revision\ &Graph :TortoiseSvnRevisionGraph<cr>'
     exec 'amenu '. g:tortoiseSvnMenuPrefix .'&Update          :TortoiseSvnUpdate<cr>'
@@ -111,4 +115,17 @@ if g:tortoiseSvnInstallAutoCmd
     autocmd BufWritePost * TortoiseSvnCommit
     let g:tortoiseSvnInstallAutoCmd = 0
 endif
+
+
+finish
+
+Version history:
+
+0.1
+- Initial release
+
+0.2
+- Make sure this works with cmd.exe as &shell too
+- Make <SID>CanonicFileName(fname) &shell sensible
+- Fixed a cut&paste error in the menu
 
