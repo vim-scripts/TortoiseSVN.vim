@@ -55,5 +55,7 @@ variables in your |vimrc| file.
     from the shell (e.g., start).
                                                     *g:tortoiseSvnInstallAutoCmd*
     g:tortoiseSvnInstallAutoCmd :: If false, no autocmd will be 
-    installed.
+    installed. If
+        1 (default) :: Commit the buffer when it is unloaded
+        2           :: Commit the buffer when it is written to disk
 
